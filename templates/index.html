@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Services Portal - Sri Lanka</title>
+    <meta name="description" content="Access all government services in one place - Ministry services, applications, and information">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="portal-title">🏛️ Citizen Portal</h1>
+                <p class="portal-subtitle">Government Services</p>
+            </div>
+            <h2 class="section-title">Categories</h2>
+            <div id="category-list" class="category-list"></div>
+            <div class="lang-switch">
+                <button onclick="setLang('en')" class="lang-btn active" data-lang="en">English</button>
+                <button onclick="setLang('si')" class="lang-btn" data-lang="si">සිංහල</button>
+                <button onclick="setLang('ta')" class="lang-btn" data-lang="ta">தமிழ்</button>
+            </div>
+            <div class="ads-section">
+                <h3 class="ads-title">📢 Announcements</h3>
+                <div id="ads-area" class="ads-area"></div>
+            </div>
+        </aside>
+        <section class="middle">
+            <h2 id="sub-title" class="content-title">Select a Category</h2>
+            <ul id="sub-list" class="sub-list"></ul>
+        </section>
+        <main class="content">
+            <div class="search-row">
+                <input id="search-input" class="search-input" placeholder="Search services or ask a question..." oninput="autosuggest(this.value)"/>
+                <button class="ai-btn" onclick="openChat()">🤖 Ask AI</button>
+            </div>
+            <div id="suggestions" class="suggestions"></div>
+            <h2 id="q-title" class="content-title">Select a Service</h2>
+            <ul id="question-list" class="question-list"></ul>
+            <div id="answer-box" class="answer-box"></div>
+
+            <!-- Progressive profile modal (hidden initially) -->
+            <div id="profile-modal" class="modal">
+                <div class="modal-content">
+                    <span class="modal-close" onclick="closeProfileModal()">&times;</span>
+                    <h3 id="profile-step-title" class="modal-title">Tell us about you</h3>
+                    <p class="modal-subtitle">Help us personalize your experience</p>
+                    <div class="step-indicators">
+                        <span class="step-dot active" id="dot-1"></span>
+                        <span class="step-dot" id="dot-2"></span>
+                        <span class="step-dot" id="dot-3"></span>
+                    </div>
+                    <div id="profile-step-1" class="profile-step">
+                        <div class="form-group">
+                            <label for="p_name">Full Name</label>
+                            <input id="p_name" placeholder="Enter your full name"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="p_age">Age</label>
+                            <input id="p_age" placeholder="Enter your age" type="number"/>
+                        </div>
+                        <button class="btn-primary" onclick="profileNext(1)">Next →</button>
+                    </div>
+                    <div id="profile-step-2" class="profile-step" style="display:none;">
+                        <div class="form-group">
+                            <label for="p_email">Email Address</label>
+                            <input id="p_email" placeholder="Enter your email" type="email"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="p_phone">Mobile Number</label>
+                            <input id="p_phone" placeholder="Enter mobile number"/>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn-secondary" onclick="profileBack(2)">← Back</button>
+                            <button class="btn-primary" onclick="profileNext(2)">Next →</button>
+                        </div>
+                    </div>
+                    <div id="profile-step-3" class="profile-step" style="display:none;">
+                        <div class="form-group">
+                            <label for="p_job">Occupation</label>
+                            <input id="p_job" placeholder="Enter your job role / workplace"/>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn-secondary" onclick="profileBack(3)">← Back</button>
+                            <button class="btn-success" onclick="profileSubmit()">✓ Finish</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- AI Chat Panel -->
+        <aside class="chat-panel" id="chat-panel">
+            <div class="chat-header">
+                <h3>🤖 AI Assistant</h3>
+                <button class="chat-close" onclick="closeChat()">&times;</button>
+            </div>
+            <div class="chat-body" id="chat-body">
+                <div class="chat-msg bot-msg">
+                    <p>Hello! I'm your AI assistant. Ask me anything about government services in Sri Lanka.</p>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input id="chat-text" placeholder="Type your question..." onkeypress="if(event.key==='Enter')sendChat()"/>
+                <button onclick="sendChat()">Send</button>
+            </div>
+        </aside>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

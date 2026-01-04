@@ -1,0 +1,346 @@
+[
+  {
+    "doc_id": "ministry_it::it_cert::How to apply for an IT certificate?",
+    "service_id": "ministry_it",
+    "subservice_id": "it_cert",
+    "title": "How to apply for an IT certificate?",
+    "content": "Ministry of IT & Digital Affairs | IT Certificates | How to apply for an IT certificate? | Fill online form and upload NIC.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/it_cert_form.pdf"
+      ],
+      "location": "https://maps.google.com/?q=Ministry+of+IT",
+      "instructions": "Visit the digital portal, register and submit application."
+    }
+  },
+  {
+    "doc_id": "ministry_education::schools::How to register a school?",
+    "service_id": "ministry_education",
+    "subservice_id": "schools",
+    "title": "How to register a school?",
+    "content": "Ministry of Education | Schools | How to register a school? | Complete registration form and submit documents.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/school_reg.pdf"
+      ],
+      "location": "https://maps.google.com/?q=Ministry+of+Education",
+      "instructions": "Follow the guidelines on the education portal."
+    }
+  },
+  {
+    "doc_id": "ministry_education::exams::How to apply for national exam?",
+    "service_id": "ministry_education",
+    "subservice_id": "exams",
+    "title": "How to apply for national exam?",
+    "content": "Ministry of Education | Exams & Results | How to apply for national exam? | Register via examination portal.",
+    "metadata": {
+      "downloads": [],
+      "location": "",
+      "instructions": "Check exam schedule and fee."
+    }
+  },
+  {
+    "doc_id": "ministry_education::exams::Where can I download exam results?",
+    "service_id": "ministry_education",
+    "subservice_id": "exams",
+    "title": "Where can I download exam results?",
+    "content": "Ministry of Education | Exams & Results | Where can I download exam results? | Visit doenets.lk for official exam results.",
+    "metadata": {
+      "downloads": [],
+      "location": "https://doenets.lk",
+      "instructions": "Enter your index number to view results."
+    }
+  },
+  {
+    "doc_id": "ministry_health::health_general::How to get a medical certificate?",
+    "service_id": "ministry_health",
+    "subservice_id": "health_general",
+    "title": "How to get a medical certificate?",
+    "content": "Ministry of Health | General Health Services | How to get a medical certificate? | Visit nearest government hospital with NIC.",
+    "metadata": {
+      "downloads": [],
+      "location": "https://maps.google.com/?q=Government+Hospital",
+      "instructions": "Bring NIC and previous medical records if any."
+    }
+  },
+  {
+    "doc_id": "ministry_transport::driving_license::How to apply for a driving license?",
+    "service_id": "ministry_transport",
+    "subservice_id": "driving_license",
+    "title": "How to apply for a driving license?",
+    "content": "Ministry of Transport | Driving License | How to apply for a driving license? | Complete application form at DMT office.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/driving_license.pdf"
+      ],
+      "location": "https://maps.google.com/?q=DMT+Office",
+      "instructions": "Bring NIC, medical certificate, and passport photos."
+    }
+  },
+  {
+    "doc_id": "ministry_imm::passport::How to apply for a passport?",
+    "service_id": "ministry_imm",
+    "subservice_id": "passport",
+    "title": "How to apply for a passport?",
+    "content": "Ministry of Immigration | Passport Services | How to apply for a passport? | Apply online and visit immigration office for biometrics.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/passport_form.pdf"
+      ],
+      "location": "https://maps.google.com/?q=Immigration+Office",
+      "instructions": "Bring birth certificate, NIC, and proof of address."
+    }
+  },
+  {
+    "doc_id": "ministry_imm::passport::What is the process for passport renewal?",
+    "service_id": "ministry_imm",
+    "subservice_id": "passport",
+    "title": "What is the process for passport renewal?",
+    "content": "Ministry of Immigration | Passport Services | What is the process for passport renewal? | Apply online at immigration.gov.lk, submit old passport and new photos.",
+    "metadata": {
+      "downloads": [],
+      "location": "https://immigration.gov.lk",
+      "instructions": "Processing takes 2-3 weeks."
+    }
+  },
+  {
+    "doc_id": "ministry_foreign::visa::How to get a visa for travel?",
+    "service_id": "ministry_foreign",
+    "subservice_id": "visa",
+    "title": "How to get a visa for travel?",
+    "content": "Ministry of Foreign Affairs | Visa Services | How to get a visa for travel? | Apply through embassy website of destination country.",
+    "metadata": {
+      "downloads": [],
+      "location": "",
+      "instructions": "Check specific embassy requirements."
+    }
+  },
+  {
+    "doc_id": "ministry_finance::tax::How to file income tax?",
+    "service_id": "ministry_finance",
+    "subservice_id": "tax",
+    "title": "How to file income tax?",
+    "content": "Ministry of Finance | Tax Services | How to file income tax? | Register on Inland Revenue portal and submit returns online.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/tax_form.pdf"
+      ],
+      "location": "",
+      "instructions": "Keep all income documents ready."
+    }
+  },
+  {
+    "doc_id": "ministry_labour::employment::How to register for job placement?",
+    "service_id": "ministry_labour",
+    "subservice_id": "employment",
+    "title": "How to register for job placement?",
+    "content": "Ministry of Labour | Employment Services | How to register for job placement? | Visit nearest employment exchange office.",
+    "metadata": {
+      "downloads": [],
+      "location": "https://maps.google.com/?q=Employment+Office",
+      "instructions": "Bring educational certificates and NIC."
+    }
+  },
+  {
+    "doc_id": "ministry_public::nic::How to change my NIC details?",
+    "service_id": "ministry_public",
+    "subservice_id": "nic",
+    "title": "How to change my NIC details?",
+    "content": "Ministry of Public Administration | NIC Services | How to change my NIC details? | Submit application with supporting documents to Registrar of Persons office.",
+    "metadata": {
+      "downloads": [],
+      "location": "https://maps.google.com/?q=Registrar+of+Persons",
+      "instructions": "Bring original documents for verification."
+    }
+  },
+  {
+    "doc_id": "ministry_public::public_general::What services are offered?",
+    "service_id": "ministry_public",
+    "subservice_id": "public_general",
+    "title": "What services are offered?",
+    "content": "Ministry of Public Administration | General Services | What services are offered? | Please check the service list on the portal.",
+    "metadata": {
+      "downloads": [],
+      "location": "",
+      "instructions": "Use contact details to get more info."
+    }
+  },
+  {
+    "doc_id": "ministry_justice::legal::How to get legal aid?",
+    "service_id": "ministry_justice",
+    "subservice_id": "legal",
+    "title": "How to get legal aid?",
+    "content": "Ministry of Justice | Legal Services | How to get legal aid? | Contact Legal Aid Commission.",
+    "metadata": {
+      "downloads": [],
+      "location": "https://maps.google.com/?q=Legal+Aid+Commission",
+      "instructions": "Bring relevant documents and NIC."
+    }
+  },
+  {
+    "doc_id": "ministry_housing::housing_schemes::How to apply for government housing?",
+    "service_id": "ministry_housing",
+    "subservice_id": "housing_schemes",
+    "title": "How to apply for government housing?",
+    "content": "Ministry of Housing | Housing Schemes | How to apply for government housing? | Fill application at housing ministry office.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/housing_form.pdf"
+      ],
+      "location": "https://maps.google.com/?q=Housing+Ministry",
+      "instructions": "Bring income proof and NIC."
+    }
+  },
+  {
+    "doc_id": "ministry_housing::housing_schemes::How to apply for a building permit?",
+    "service_id": "ministry_housing",
+    "subservice_id": "housing_schemes",
+    "title": "How to apply for a building permit?",
+    "content": "Ministry of Housing | Housing Schemes | How to apply for a building permit? | Submit building plans to local authority with application form.",
+    "metadata": {
+      "downloads": [],
+      "location": "",
+      "instructions": "Include land ownership documents."
+    }
+  },
+  {
+    "doc_id": "ministry_agri::farming::How to get farming subsidies?",
+    "service_id": "ministry_agri",
+    "subservice_id": "farming",
+    "title": "How to get farming subsidies?",
+    "content": "Ministry of Agriculture | Farming Support | How to get farming subsidies? | Register with Agrarian Service Center.",
+    "metadata": {
+      "downloads": [],
+      "location": "https://maps.google.com/?q=Agrarian+Service+Center",
+      "instructions": "Bring land ownership documents."
+    }
+  },
+  {
+    "doc_id": "ministry_youth::youth_programs::What youth programs are available?",
+    "service_id": "ministry_youth",
+    "subservice_id": "youth_programs",
+    "title": "What youth programs are available?",
+    "content": "Ministry of Youth Affairs | Youth Programs | What youth programs are available? | Check youth ministry website for current programs.",
+    "metadata": {
+      "downloads": [],
+      "location": "",
+      "instructions": "Visit youth ministry portal."
+    }
+  },
+  {
+    "doc_id": "ministry_youth::youth_programs::What training courses are available in digital skills?",
+    "service_id": "ministry_youth",
+    "subservice_id": "youth_programs",
+    "title": "What training courses are available in digital skills?",
+    "content": "Ministry of Youth Affairs | Youth Programs | What training courses are available in digital skills? | Free digital skills courses available through ICTA and youth ministry programs.",
+    "metadata": {
+      "downloads": [],
+      "location": "https://icta.lk/training",
+      "instructions": "Register online on ICTA website."
+    }
+  },
+  {
+    "doc_id": "ministry_defence::defence_general::What services are offered?",
+    "service_id": "ministry_defence",
+    "subservice_id": "defence_general",
+    "title": "What services are offered?",
+    "content": "Ministry of Defence | General Services | What services are offered? | Please check the service list on the portal.",
+    "metadata": {
+      "downloads": [],
+      "location": "",
+      "instructions": "Use contact details to get more info."
+    }
+  },
+  {
+    "doc_id": "ministry_tourism::tourism_info::How to get tourist guide license?",
+    "service_id": "ministry_tourism",
+    "subservice_id": "tourism_info",
+    "title": "How to get tourist guide license?",
+    "content": "Ministry of Tourism | Tourism Information | How to get tourist guide license? | Apply through tourism ministry website.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/tourist_guide.pdf"
+      ],
+      "location": "",
+      "instructions": "Complete training course first."
+    }
+  },
+  {
+    "doc_id": "ministry_trade::business_reg::How to register a business?",
+    "service_id": "ministry_trade",
+    "subservice_id": "business_reg",
+    "title": "How to register a business?",
+    "content": "Ministry of Industry & Trade | Business Registration | How to register a business? | Register online through ROC website.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/business_reg.pdf"
+      ],
+      "location": "",
+      "instructions": "Prepare business plan and required documents."
+    }
+  },
+  {
+    "doc_id": "ministry_energy::electricity::How to get new electricity connection?",
+    "service_id": "ministry_energy",
+    "subservice_id": "electricity",
+    "title": "How to get new electricity connection?",
+    "content": "Ministry of Power & Energy | Electricity Services | How to get new electricity connection? | Apply through CEB office.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/electricity_form.pdf"
+      ],
+      "location": "https://maps.google.com/?q=CEB+Office",
+      "instructions": "Bring property ownership documents."
+    }
+  },
+  {
+    "doc_id": "ministry_water::water_supply::How can I get water connection?",
+    "service_id": "ministry_water",
+    "subservice_id": "water_supply",
+    "title": "How can I get water connection?",
+    "content": "Ministry of Water Supply | Water Connection | How can I get water connection? | Apply at NWSDB office.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/water_form.pdf"
+      ],
+      "location": "https://maps.google.com/?q=NWSDB+Office",
+      "instructions": "Bring property documents and NIC."
+    }
+  },
+  {
+    "doc_id": "ministry_env::env_permits::How to get environmental clearance?",
+    "service_id": "ministry_env",
+    "subservice_id": "env_permits",
+    "title": "How to get environmental clearance?",
+    "content": "Ministry of Environment | Environmental Permits | How to get environmental clearance? | Submit project proposal to CEA.",
+    "metadata": {
+      "downloads": [],
+      "location": "https://maps.google.com/?q=CEA+Office",
+      "instructions": "Prepare environmental impact assessment."
+    }
+  },
+  {
+    "doc_id": "ministry_culture::cultural_events::What cultural events are available?",
+    "service_id": "ministry_culture",
+    "subservice_id": "cultural_events",
+    "title": "What cultural events are available?",
+    "content": "Ministry of Culture | Cultural Events | What cultural events are available? | Check ministry website for event calendar.",
+    "metadata": {
+      "downloads": [],
+      "location": "",
+      "instructions": "Visit cultural ministry portal."
+    }
+  },
+  {
+    "doc_id": "ministry_road_safety::road_safety::Where to report a road safety complaint?",
+    "service_id": "ministry_road_safety",
+    "subservice_id": "road_safety",
+    "title": "Where to report a road safety complaint?",
+    "content": "Road Safety Authority | Road Safety Complaints | Where to report a road safety complaint? | Report to nearest police station or call 119.",
+    "metadata": {
+      "downloads": [],
+      "location": "",
+      "instructions": "Note the location and time of incident."
+    }
+  }
+]
