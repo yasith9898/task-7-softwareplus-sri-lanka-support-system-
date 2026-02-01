@@ -2,6 +2,7 @@
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -12,12 +13,16 @@ services_col = db["services"]
 categories_col = db["categories"]
 officers_col = db["officers"]
 ads_col = db["ads"]
+products_col = db["products"]
+orders_col = db["orders"]
+payments_col = db["payments"]
 
 # Clear existing data
 services_col.delete_many({})
 categories_col.delete_many({})
 officers_col.delete_many({})
 ads_col.delete_many({})
+products_col.delete_many({})
 
 # Seed categories
 categories = [
@@ -63,15 +68,182 @@ print(f"✅ Seeded {len(officers)} officers")
 
 # Seed ads/announcements
 ads = [
-    {"id": "ad_courses_01", "title": "Free Digital Skills Course", "body": "Enroll now for government digital skills training. Limited seats available for citizens.", "link": "https://digitalskills.gov.lk/courses", "image": "/static/img/course-card.png", "active": True},
-    {"id": "ad_exams_01", "title": "Exam Results Portal", "body": "Check latest A/L and O/L exam results online. Fast and secure access.", "link": "https://doenets.lk/results", "active": True},
-    {"id": "ad_passport_01", "title": "Online Passport Application", "body": "Apply for your passport online and track application status 24/7.", "link": "https://epassport.gov.lk", "active": True},
-    {"id": "ad_tax_01", "title": "e-Filing Tax Returns", "body": "File your income tax returns online before the deadline. Save time!", "link": "https://ird.gov.lk/efiling", "active": True},
-    {"id": "ad_job_fair_01", "title": "National Job Fair 2026", "body": "1000+ job opportunities. Register now for the largest government job fair.", "link": "https://jobfair.gov.lk", "active": True},
-    {"id": "ad_training_01", "title": "Vocational Training Programs", "body": "Free vocational training in IT, Hospitality, and Construction sectors.", "link": "https://vocational.gov.lk", "active": True}
+    {
+        "id": "ad_courses_01", 
+        "title": "Free Digital Skills Course", 
+        "body": "Enroll now for government digital skills training. Limited seats available for students.", 
+        "link": "https://digitalskills.gov.lk/courses", 
+        "image": "/static/img/course-card.png", 
+        "active": True,
+        "tags": ["courses", "training", "it"],
+        "target_segments": ["student", "young_adult"]
+    },
+    {
+        "id": "ad_exams_01", 
+        "title": "Exam Results Portal", 
+        "body": "Check latest A/L and O/L exam results online. Fast and secure access.", 
+        "link": "https://doenets.lk/results", 
+        "active": True,
+        "tags": ["exams", "results", "education"],
+        "target_segments": ["student", "parent"]
+    },
+    {
+        "id": "ad_passport_01", 
+        "title": "Online Passport Application", 
+        "body": "Apply for your passport online and track application status 24/7.", 
+        "link": "https://epassport.gov.lk", 
+        "active": True,
+        "tags": ["passport", "travel", "immigration"],
+        "target_segments": ["all"]
+    },
+    {
+        "id": "ad_tax_01", 
+        "title": "e-Filing Tax Returns", 
+        "body": "File your income tax returns online before the deadline. Save time!", 
+        "link": "https://ird.gov.lk/efiling", 
+        "active": True,
+        "tags": ["tax", "finance"],
+        "target_segments": ["working_professional", "business_owner"]
+    },
+    {
+        "id": "ad_job_fair_01", 
+        "title": "National Job Fair 2026", 
+        "body": "1000+ job opportunities. Register now for the largest government job fair.", 
+        "link": "https://jobfair.gov.lk", 
+        "active": True,
+        "tags": ["jobs", "career"],
+        "target_segments": ["job_seeker", "student"]
+    },
+    {
+        "id": "ad_training_01", 
+        "title": "Vocational Training Programs", 
+        "body": "Free vocational training in IT, Hospitality, and Construction sectors.", 
+        "link": "https://vocational.gov.lk", 
+        "active": True,
+        "tags": ["training", "vocational"],
+        "target_segments": ["student", "unemployed"]
+    },
+    {
+        "id": "ad_teacher_edu_01",
+        "title": "Professional Education Diploma",
+        "body": "Advance your teaching careeer with our new Post-Graduate Diploma in Education.",
+        "link": "https://nier.lk/pgde",
+        "active": True,
+        "tags": ["education", "teaching", "diploma"],
+        "target_segments": ["teacher"]
+    },
+    {
+        "id": "ad_teacher_resources_01",
+        "title": "Digital Classroom Resources",
+        "body": "Access thousands of free digital teaching aids and lesson plans.",
+        "link": "https://edupub.gov.lk/resources",
+        "active": True,
+        "tags": ["education", "resources", "teaching"],
+        "target_segments": ["teacher"]
+    }
 ]
 ads_col.insert_many(ads)
 print(f"✅ Seeded {len(ads)} ads/announcements")
+
+# Seed products
+products = [
+    {
+        "id": "prod_degree_01",
+        "name": "Bachelor of IT (SpaceXP Campus)",
+        "category": "education",
+        "subcategory": "degree_programs",
+        "price": 185000,
+        "original_price": 225000,
+        "currency": "LKR",
+        "images": ["/static/store/degree_it.jpg"],
+        "description": "Complete your IT degree with flexible payment options. Government employee discount available.",
+        "features": ["3-year program", "Weekend classes", "Online support", "Government discount"],
+        "tags": ["degree", "it", "government", "career_advancement"],
+        "target_segments": ["needs_qualification", "government_employee", "mid_career_family"],
+        "in_stock": True,
+        "delivery_options": ["online", "campus"],
+        "rating": 4.5,
+        "reviews_count": 47,
+        "created": datetime.utcnow()
+    },
+    {
+        "id": "prod_ielts_01",
+        "name": "IELTS Preparation Course",
+        "category": "education",
+        "subcategory": "language_courses",
+        "price": 25000,
+        "original_price": 35000,
+        "currency": "LKR",
+        "images": ["/static/store/ielts_course.jpg"],
+        "description": "Comprehensive IELTS preparation with mock tests and speaking practice.",
+        "features": ["4-week intensive", "Expert trainers", "Mock tests", "Speaking practice"],
+        "tags": ["ielts", "english", "overseas", "government"],
+        "target_segments": ["government_employee", "early_career", "mid_education"],
+        "in_stock": True,
+        "delivery_options": ["online", "classroom"],
+        "rating": 4.7,
+        "reviews_count": 89,
+        "created": datetime.utcnow()
+    },
+    {
+        "id": "prod_japan_visa_01",
+        "name": "Japan Work Visa Assistance",
+        "category": "visa_services",
+        "subcategory": "job_visas",
+        "price": 45000,
+        "currency": "LKR",
+        "images": ["/static/store/japan_visa.jpg"],
+        "description": "Complete assistance for Japan work visa applications. IT and healthcare opportunities.",
+        "features": ["Visa processing", "Job matching", "Document preparation", "Pre-departure orientation"],
+        "tags": ["japan", "work_visa", "overseas_jobs", "it_jobs"],
+        "target_segments": ["early_career", "mid_career_family", "needs_qualification"],
+        "in_stock": True,
+        "delivery_options": ["consultation"],
+        "rating": 4.3,
+        "reviews_count": 34,
+        "created": datetime.utcnow()
+    },
+    {
+        "id": "prod_laptop_01",
+        "name": "Government Employee Laptop Deal",
+        "category": "electronics",
+        "subcategory": "computers",
+        "price": 85000,
+        "original_price": 115000,
+        "currency": "LKR",
+        "images": ["/static/store/laptop_deal.jpg"],
+        "description": "Special laptop package for government employees with extended warranty.",
+        "features": ["Intel i5 processor", "8GB RAM", "256GB SSD", "2-year warranty", "Government discount"],
+        "tags": ["laptop", "electronics", "government_deal", "technology"],
+        "target_segments": ["government_employee", "early_career", "mid_career_family"],
+        "in_stock": True,
+        "delivery_options": ["delivery", "pickup"],
+        "rating": 4.4,
+        "reviews_count": 156,
+        "created": datetime.utcnow()
+    },
+    {
+        "id": "prod_saree_01",
+        "name": "Handloom Batik Saree Collection",
+        "category": "fashion",
+        "subcategory": "traditional_wear",
+        "price": 4500,
+        "original_price": 6500,
+        "currency": "LKR",
+        "images": ["/static/store/batik_saree.jpg"],
+        "description": "Authentic handloom batik sarees with traditional designs. Limited edition.",
+        "features": ["Pure cotton", "Handmade", "Traditional designs", "Multiple colors"],
+        "tags": ["saree", "batik", "handloom", "traditional", "fashion"],
+        "target_segments": ["mid_career_family", "established_professional", "senior"],
+        "in_stock": True,
+        "delivery_options": ["delivery", "pickup"],
+        "rating": 4.6,
+        "reviews_count": 203,
+        "created": datetime.utcnow()
+    }
+]
+products_col.insert_many(products)
+print(f"✅ Seeded {len(products)} products")
 
 # Comprehensive set of 20 ministries with subservices (with category field)
 docs = [

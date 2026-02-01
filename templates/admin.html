@@ -41,6 +41,21 @@
         .header-buttons {
             display: flex;
             gap: 12px;
+            align-items: center;
+        }
+
+        .dashboard-link {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .dashboard-link:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         #login-box {
@@ -347,6 +362,7 @@
             <div class="admin-header">
                 <h1>📊 Admin Dashboard</h1>
                 <div class="header-buttons">
+                    <a href="/dashboard" class="dashboard-link">📊 Enhanced Analytics</a>
                     <button id="rebuildIndexBtn" onclick="rebuildIndex()">🔄 Rebuild AI Index</button>
                     <button id="logoutBtn">Logout</button>
                 </div>

@@ -7,34 +7,67 @@ let currentSub = null;
 let profile_id = null;
 
 // Load categories
+// Load categories (Home view)
+async function loadCategoriesView() {
+    currentServiceName = "";
+    currentSub = null;
+    document.getElementById("main-list").innerHTML = "";
+    document.getElementById("sub-title").innerText = "Categories";
+    document.getElementById("question-list").innerHTML = "";
+    document.getElementById("answer-box").innerHTML = "";
+
+    // Highlight Home nav
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    const homeBtn = document.querySelector(".nav-btn");
+    if (homeBtn) homeBtn.classList.add("active");
+
+    await loadCategories();
+}
+
 async function loadCategories() {
     try {
-        const res = await fetch("/api/categories");
-        categories = await res.json();
-        const el = document.getElementById("category-list");
+        // Fetch if empty
+        if (categories.length === 0) {
+            const res = await fetch("/api/categories");
+            categories = await res.json();
+        }
+
+        const el = document.getElementById("main-list");
+        if (!el) return;
         el.innerHTML = "";
+
         categories.forEach(c => {
-            const btn = document.createElement("div");
-            btn.className = "cat-item";
-            btn.textContent = c.name?.[lang] || c.name?.en || c.id;
-            btn.onclick = () => loadMinistriesInCategory(c);
-            el.appendChild(btn);
+            const li = document.createElement("li");
+            li.className = "cat-item-card";
+            li.innerHTML = `<span class="cat-icon">📁</span> <span class="cat-name">${c.name?.[lang] || c.name?.en || c.id}</span>`;
+            li.onclick = () => loadMinistriesInCategory(c);
+            el.appendChild(li);
         });
+
         // Load ads
         loadAds();
     } catch (err) {
         console.error("Error loading categories:", err);
-        // Fallback to services
         loadServices();
     }
 }
 
 // Load ministries within a category
+// Load ministries within a category
 async function loadMinistriesInCategory(cat) {
-    document.getElementById("sub-list").innerHTML = "";
+    const list = document.getElementById("main-list");
+    if (!list) return;
+    list.innerHTML = "";
+
+    // Add Back Button
+    const backBtn = document.createElement("li");
+    backBtn.className = "back-btn-item";
+    backBtn.innerHTML = "← Back to Categories";
+    backBtn.onclick = loadCategoriesView;
+    list.appendChild(backBtn);
+
     document.getElementById("sub-title").innerText = cat.name?.[lang] || cat.name?.en || cat.id;
     document.getElementById("question-list").innerHTML = "";
-    document.getElementById("answer-box").innerHTML = "";
 
     // If categories document contains ministry_ids show them
     if (cat.ministry_ids && cat.ministry_ids.length) {
@@ -45,9 +78,10 @@ async function loadMinistriesInCategory(cat) {
                 if (s && s.subservices) {
                     s.subservices.forEach(sub => {
                         let li = document.createElement("li");
+                        li.className = "service-item"; // consistently use service-item
                         li.textContent = sub.name?.[lang] || sub.name?.en || sub.id;
                         li.onclick = () => loadQuestions(s, sub);
-                        document.getElementById("sub-list").appendChild(li);
+                        list.appendChild(li);
                     });
                 }
             } catch (err) {
@@ -57,14 +91,17 @@ async function loadMinistriesInCategory(cat) {
     } else {
         // Fallback: query services and filter by category
         try {
-            const svcRes = await fetch("/api/services");
-            const all = await svcRes.json();
-            all.filter(s => s.category === cat.id).forEach(s => {
+            if (services.length === 0) {
+                const svcRes = await fetch("/api/services");
+                services = await svcRes.json();
+            }
+            services.filter(s => s.category === cat.id).forEach(s => {
                 (s.subservices || []).forEach(sub => {
                     let li = document.createElement("li");
+                    li.className = "service-item";
                     li.textContent = sub.name?.[lang] || sub.name?.en || sub.id;
                     li.onclick = () => loadQuestions(s, sub);
-                    document.getElementById("sub-list").appendChild(li);
+                    list.appendChild(li);
                 });
             });
         } catch (err) {
@@ -74,19 +111,21 @@ async function loadMinistriesInCategory(cat) {
 }
 
 // Fallback: Load services directly (ministries list)
+// Fallback: Load services directly (ministries list)
 async function loadServices() {
     try {
         const res = await fetch("/api/services");
         services = await res.json();
-        const list = document.getElementById("category-list");
+        const list = document.getElementById("main-list");
+        if (!list) return;
         list.innerHTML = "";
-        
+
         services.forEach(s => {
-            let div = document.createElement("div");
-            div.className = "cat-item";
-            div.textContent = s.name?.[lang] || s.name?.en || s.id;
-            div.onclick = () => loadSubservices(s);
-            list.appendChild(div);
+            let li = document.createElement("li");
+            li.className = "service-item"; // consistently use service-item
+            li.textContent = s.name?.[lang] || s.name?.en || s.id;
+            li.onclick = () => loadSubservices(s);
+            list.appendChild(li);
         });
     } catch (error) {
         console.error("Error loading services:", error);
@@ -101,22 +140,30 @@ function setLang(l) {
             btn.classList.add('active');
         }
     });
-    loadCategories();
-    document.getElementById("sub-list").innerHTML = "";
-    document.getElementById("question-list").innerHTML = "";
-    document.getElementById("answer-box").innerHTML = "";
+    // Reset view
+    loadCategoriesView();
 }
 
 function loadSubservices(service) {
     currentServiceName = service.name?.[lang] || service.name?.en || service.id;
-    const subList = document.getElementById("sub-list");
-    subList.innerHTML = "";
+    const list = document.getElementById("main-list");
+    if (!list) return;
+    list.innerHTML = "";
+
+    // Add Back Button
+    const backBtn = document.createElement("li");
+    backBtn.className = "back-btn-item";
+    backBtn.innerHTML = "← Back";
+    backBtn.onclick = loadCategoriesView;
+    list.appendChild(backBtn);
+
     document.getElementById("sub-title").innerText = currentServiceName;
     (service.subservices || []).forEach(sub => {
         let li = document.createElement("li");
+        li.className = "service-item";
         li.textContent = sub.name?.[lang] || sub.name?.en || sub.id;
         li.onclick = () => loadQuestions(service, sub);
-        subList.appendChild(li);
+        list.appendChild(li);
     });
 }
 
@@ -208,7 +255,7 @@ async function sendChat() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ user_id: profile_id, question_clicked: text, service: null })
-        }).catch(() => {});
+        }).catch(() => { });
     } catch (err) {
         removeChat(typingId);
         appendChat("bot", "Sorry, there was an error connecting to the AI service.");
@@ -262,7 +309,7 @@ async function autosuggest(q) {
             if (items.length === 0) {
                 el.innerHTML = '<div class="s-item s-empty">No results. Try the AI Assistant!</div>';
             } else {
-                el.innerHTML = items.map(it => 
+                el.innerHTML = items.map(it =>
                     `<div class="s-item" onclick='pickSuggestion(${JSON.stringify(JSON.stringify(it))})'>${it.name?.en || it.name || it.id}</div>`
                 ).join("");
             }
@@ -340,10 +387,11 @@ async function profileSubmit() {
         });
 
         closeProfileModal();
-        
+
         // Store profile_id in localStorage
         if (profile_id) {
             localStorage.setItem('profile_id', profile_id);
+            loadAds();
         }
     } catch (err) {
         console.error("Profile submit error:", err);
@@ -354,13 +402,28 @@ async function profileSubmit() {
 // Load ads
 async function loadAds() {
     try {
-        const res = await fetch("/api/ads");
-        const ads = await res.json();
+        let ads = [];
+        if (profile_id) {
+            try {
+                const res = await fetch(`/api/recommendations/${profile_id}`);
+                const data = await res.json();
+                ads = data.ads || [];
+            } catch (e) {
+                console.error("Error loading recommendations:", e);
+                // fall through to default
+            }
+        }
+
+        if (ads.length === 0) {
+            const res = await fetch("/api/ads");
+            ads = await res.json();
+        }
+
         const el = document.getElementById("ads-area");
         if (ads.length === 0) {
             el.innerHTML = '<div class="ad-card"><p>No announcements at this time.</p></div>';
         } else {
-            el.innerHTML = ads.slice(0, 3).map(a => 
+            el.innerHTML = ads.slice(0, 3).map(a =>
                 `<div class="ad-card">
                     <a href="${a.link || '#'}" target="_blank">
                         <h4>${a.title}</h4>
@@ -375,13 +438,15 @@ async function loadAds() {
 }
 
 // Initial load
+// Initial load
 window.onload = async () => {
     // Check for stored profile
     profile_id = localStorage.getItem('profile_id') || null;
-    
-    await loadCategories();
-    
-    // Load services as backup
+
+    // Reset view to categories
+    await loadCategoriesView();
+
+    // Load services as backup for searching
     try {
         const svcRes = await fetch("/api/services");
         services = await svcRes.json();

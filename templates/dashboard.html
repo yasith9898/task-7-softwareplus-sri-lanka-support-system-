@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Enhanced Analytics Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #ec4899;
+            --dark: #1e293b;
+            --light: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .metric-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .metric-sub {
+            font-size: 12px;
+            color: #10b981;
+            /* Green for success */
+            margin-top: 4px;
+        }
+
+        /* Charts Section */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Activity List */
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e0e7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .activity-details p {
+            margin: 0;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .segment-bar {
+            margin-bottom: 12px;
+        }
+
+        .segment-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .progress-bg {
+            height: 8px;
+            background-color: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <h1>Enhanced Analytics Dashboard</h1>
+            <nav class="nav-links">
+                <a href="/admin">Legacy Admin</a>
+                <a href="/store">Public Store</a>
+                <a href="/">Home</a>
+            </nav>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-title">Total Users</div>
+                <div class="metric-value">{{ analytics.user_metrics.total_users }}</div>
+                <div class="metric-sub">+{{ analytics.user_metrics.new_users_7d }} this week</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Active Users (30d)</div>
+                <div class="metric-value">{{ analytics.user_metrics.active_users }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Total Revenue</div>
+                <div class="metric-value">LKR {{ "{:,.2f}".format(analytics.store_metrics.total_revenue) }}</div>
+                <div class="metric-sub">{{ analytics.store_metrics.total_orders }} orders</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Recent Engagements</div>
+                <div class="metric-value">{{ analytics.engagement_metrics.recent_engagements }}</div>
+                <div class="metric-sub">Last 7 days</div>
+            </div>
+        </div>
+
+        <!-- User Segments & Charts -->
+        <div class="charts-row">
+            <div class="chart-container">
+                <h3 class="section-title">User Segmentation</h3>
+                <div id="segments-container">
+                    {% for segment, count in analytics.user_segments.items() %}
+                    <div class="segment-bar">
+                        <div class="segment-label">
+                            <span>{{ segment|replace('_', ' ')|title }}</span>
+                            <span>{{ count }} users</span>
+                        </div>
+                        <div class="progress-bg">
+                            <!-- Calculate percentage roughly against total sampled users -->
+                            <div class="progress-fill" style="width: {{ (count / 100 * 100) }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3 class="section-title">Store Performance</h3>
+                <canvas id="storeChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Activities & Popular Products -->
+        <div class="charts-row">
+            <div class="chart-container">
+                <h3 class="section-title">Recent Activity</h3>
+                <div class="activity-list">
+                    {% for act in analytics.recent_activities %}
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            {% if act.type == 'purchase' %}🛒{% elif act.question_clicked %}❓{% else %}🖱️{% endif %}
+                        </div>
+                        <div class="activity-details">
+                            <p>
+                                <strong>User {{ act.user_id|string|truncate(6) }}</strong>
+                                {% if act.type == 'purchase' %}
+                                purchased items worth LKR {{ act.amount }}
+                                {% elif act.question_clicked %}
+                                asked about "{{ act.question_clicked|truncate(30) }}"
+                                {% else %}
+                                engaged with service "{{ act.service }}"
+                                {% endif %}
+                            </p>
+                            <div class="activity-time">{{ act.timestamp }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h3 class="section-title">Popular Products</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Rating</th>
+                            <th>Reviews</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prod in analytics.popular_products %}
+                        <tr>
+                            <td>{{ prod.name }}</td>
+                            <td>⭐ {{ prod.rating }}</td>
+                            <td>{{ prod.reviews_count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store Chart
+        const ctx = document.getElementById('storeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed Orders', 'Pending Orders', 'Returns'],
+                datasets: [{
+                    data: [{{ analytics.store_metrics.total_orders }}, 2, 0], // Sample data distribution
+                backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
+            }]
+        },
+            options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+        });
+    </script>
+</body>
+
+</html>

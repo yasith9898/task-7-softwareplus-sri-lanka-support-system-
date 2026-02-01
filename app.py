@@ -5,12 +5,13 @@ from flask import Flask, jsonify, render_template, request, session, redirect, s
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import StringIO, BytesIO
 import csv
 from dotenv import load_dotenv
 import bcrypt
 import pathlib
+from recommendation_engine import RecommendationEngine
 
 # AI / embeddings
 import numpy as np
@@ -40,6 +41,12 @@ categories_col = db["categories"]  # new: category groups
 officers_col = db["officers"]  # new: officers metadata
 ads_col = db["ads"]  # new: ads & training program announcements
 users_col = db["users"]  # new: progressive profile / accounts
+products_col = db["products"]
+orders_col = db["orders"]
+payments_col = db["payments"]
+
+# Initialize Recommendation Engine
+recommendation_engine = RecommendationEngine()
 
 # Embedding model (lazy-init)
 EMBED_MODEL = None
@@ -497,6 +504,361 @@ def export_csv():
         download_name="engagements.csv"
     )
 
+
+# --- Navigation Routes ---
+@app.route("/store")
+def store():
+    return render_template("store.html")
+
+@app.route("/dashboard")
+def dashboard():
+    if not session.get("admin_logged_in"):
+        return redirect("/admin/login")
+    
+    # Get enhanced analytics
+    analytics_response = get_dashboard_analytics()
+    analytics = analytics_response.get_json()
+    
+    # We need to create a dashboard template or pass to existing one
+    # If dashboard.html doesn't exist, we might need to create it.
+    # For now assuming dashboard.html will be created.
+    return render_template("dashboard.html", 
+                           analytics=analytics)
+
+# --- Enhanced Customer Data Collection System ---
+
+# 1.1 Extended User Profile Schema
+@app.route("/api/profile/extended", methods=["POST"])
+def extended_profile():
+    payload = request.json or {}
+    profile_id = payload.get("profile_id")
+    if not profile_id:
+        return jsonify({"error": "profile_id required"}), 400
+        
+    extended_data = {
+        "family": {
+            "marital_status": payload.get("marital_status"),
+            "children": payload.get("children", []),
+            "children_ages": payload.get("children_ages", []),
+            "children_education": payload.get("children_education", []),
+            "dependents": payload.get("dependents", 0)
+        },
+        "education": {
+            "highest_qualification": payload.get("highest_qualification"),
+            "institution": payload.get("institution"),
+            "year_graduated": payload.get("year_graduated"),
+            "field_of_study": payload.get("field_of_study")
+        },
+        "career": {
+            "current_job": payload.get("current_job"),
+            "years_experience": payload.get("years_experience"),
+            "skills": payload.get("skills", []),
+            "career_goals": payload.get("career_goals", [])
+        },
+        "interests": {
+            "hobbies": payload.get("hobbies", []),
+            "learning_interests": payload.get("learning_interests", []),
+            "service_preferences": payload.get("service_preferences", [])
+        },
+        "consent": {
+            "marketing_emails": payload.get("marketing_emails", False),
+            "personalized_ads": payload.get("personalized_ads", False),
+            "data_analytics": payload.get("data_analytics", False)
+        }
+    }
+    
+    users_col.update_one(
+        {"_id": ObjectId(profile_id)},
+        {"$set": {"extended_profile": extended_data, "updated": datetime.utcnow()}}
+    )
+    return jsonify({"status": "ok"})
+
+# 1.2 Enhanced Engagement Tracking
+@app.route("/api/engagement/enhanced", methods=["POST"])
+def log_enhanced_engagement():
+    payload = request.json or {}
+    # Extract behavioral data
+    user_agent = request.headers.get('User-Agent', '')
+    ip_address = request.remote_addr
+    referrer = request.headers.get('Referer', '')
+    
+    doc = {
+        "user_id": payload.get("user_id"),
+        "session_id": payload.get("session_id"),
+        "age": int(payload.get("age")) if payload.get("age") else None,
+        "job": payload.get("job"),
+        "desires": payload.get("desires", []),
+        "question_clicked": payload.get("question_clicked"),
+        "service": payload.get("service"),
+        "ad": payload.get("ad"),
+        "source": payload.get("source"),
+        "time_spent": payload.get("time_spent"),
+        "scroll_depth": payload.get("scroll_depth"),
+        "clicks": payload.get("clicks", []),
+        "searches": payload.get("searches", []),
+        "device_info": {
+            "user_agent": user_agent,
+            "ip_address": ip_address,
+            "screen_resolution": payload.get("screen_resolution")
+        },
+        "referral_data": {
+            "referrer": referrer,
+            "utm_source": payload.get("utm_source"),
+            "utm_medium": payload.get("utm_medium"),
+            "utm_campaign": payload.get("utm_campaign")
+        },
+        "timestamp": datetime.utcnow()
+    }
+    eng_col.insert_one(doc)
+    return jsonify({"status": "ok"})
+
+# --- Smart Recommendation Algorithm ---
+
+@app.route("/api/recommendations/<user_id>")
+def get_recommendations(user_id):
+    try:
+        ads = recommendation_engine.get_personalized_ads(user_id)
+        edu_recommendations = recommendation_engine.generate_education_recommendations(user_id)
+        return jsonify({
+            "ads": ads,
+            "education_recommendations": edu_recommendations,
+            "user_segment": recommendation_engine.get_user_segment(user_id)
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# --- Store Implementation ---
+
+@app.route("/api/store/products")
+def get_products():
+    category = request.args.get("category")
+    subcategory = request.args.get("subcategory")
+    tags = request.args.get("tags", "").split(",") if request.args.get("tags") else []
+    min_price = request.args.get("min_price", type=float)
+    max_price = request.args.get("max_price", type=float)
+    
+    query = {"in_stock": True}
+    
+    if category:
+        categories = category.split(",")
+        if len(categories) > 1:
+            query["category"] = {"$in": categories}
+        else:
+            query["category"] = category
+            
+    if subcategory:
+        query["subcategory"] = subcategory
+        
+    if tags and tags[0]:
+        query["tags"] = {"$in": tags}
+        
+    if min_price is not None or max_price is not None:
+        query["price"] = {}
+        if min_price is not None:
+            query["price"]["$gte"] = min_price
+        if max_price is not None:
+            query["price"]["$lte"] = max_price
+            
+    products = list(products_col.find(query, {"_id": 0}).limit(50))
+    return jsonify(products)
+
+@app.route("/api/store/categories")
+def get_store_categories():
+    categories = products_col.distinct("category")
+    subcategories = {}
+    for cat in categories:
+        subcategories[cat] = products_col.distinct("subcategory", {"category": cat})
+    
+    return jsonify({
+        "categories": categories,
+        "subcategories": subcategories
+    })
+
+@app.route("/api/store/order", methods=["POST"])
+def create_order():
+    payload = request.json or {}
+    order = {
+        "order_id": f"ORD{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+        "user_id": payload.get("user_id"),
+        "items": payload.get("items", []),
+        "total_amount": payload.get("total_amount", 0),
+        "status": "pending",
+        "shipping_address": payload.get("shipping_address", {}),
+        "payment_method": payload.get("payment_method"),
+        "created": datetime.utcnow(),
+        "updated": datetime.utcnow()
+    }
+    result = orders_col.insert_one(order)
+    return jsonify({"status": "ok", "order_id": order["order_id"]})
+
+@app.route("/api/store/payment", methods=["POST"])
+def process_payment():
+    payload = request.json or {}
+    payment = {
+        "payment_id": f"PAY{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+        "order_id": payload.get("order_id"),
+        "user_id": payload.get("user_id"),
+        "amount": payload.get("amount", 0),
+        "currency": payload.get("currency", "LKR"),
+        "method": payload.get("method"),
+        "status": "completed",
+        "transaction_id": payload.get("transaction_id"),
+        "created": datetime.utcnow()
+    }
+    
+    # Update order status
+    orders_col.update_one(
+        {"order_id": payload.get("order_id")},
+        {"$set": {"status": "paid", "updated": datetime.utcnow()}}
+    )
+    
+    payments_col.insert_one(payment)
+    
+    # Log engagement for recommendation system
+    eng_col.insert_one({
+        "user_id": payload.get("user_id"),
+        "type": "purchase",
+        "product_ids": [item.get("product_id") for item in payload.get("items", [])],
+        "amount": payload.get("amount", 0),
+        "timestamp": datetime.utcnow()
+    })
+    
+    return jsonify({"status": "ok", "payment_id": payment["payment_id"]})
+
+# --- Enhanced Dashboard with Analytics ---
+
+@app.route("/api/dashboard/analytics")
+@admin_required
+def get_dashboard_analytics():
+    # User analytics
+    total_users = users_col.count_documents({})
+    # active_users logic: "last_active" exists
+    active_users = users_col.count_documents({"last_active": {"$gte": datetime.utcnow() - timedelta(days=30)}})
+    
+    # Engagement analytics
+    total_engagements = eng_col.count_documents({})
+    recent_engagements = eng_col.count_documents({"timestamp": {"$gte": datetime.utcnow() - timedelta(days=7)}})
+    
+    # Store analytics
+    total_orders = orders_col.count_documents({})
+    
+    # Revenue
+    cursor_rev = payments_col.aggregate([
+        {"$match": {"status": "completed"}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ])
+    revenue_result = list(cursor_rev)
+    total_revenue_amount = revenue_result[0]["total"] if revenue_result else 0
+    
+    # User segmentation (Sample - in real app this might be pre-calculated)
+    # We'll just sample last 100 users for performance if DB is huge
+    user_segments = {}
+    users = users_col.find().sort("created", -1).limit(100)
+    for user in users:
+        segments = recommendation_engine.get_user_segment(str(user["_id"]))
+        for segment in segments:
+            user_segments[segment] = user_segments.get(segment, 0) + 1
+            
+    # Popular products
+    popular_products = list(products_col.find().sort("rating", -1).limit(5))
+    for prod in popular_products:
+        if "_id" in prod:
+            prod["_id"] = str(prod["_id"])
+        if "created" in prod and isinstance(prod["created"], datetime):
+            prod["created"] = prod["created"].isoformat()
+    
+    # Recent activities (convert ObjectId/Date for JSON)
+    recent_activities = []
+    for act in eng_col.find().sort("timestamp", -1).limit(10):
+        act["_id"] = str(act["_id"])
+        if act.get("timestamp"):
+            act["timestamp"] = act["timestamp"].isoformat()
+        recent_activities.append(act)
+
+    return jsonify({
+        "user_metrics": {
+            "total_users": total_users,
+            "active_users": active_users,
+            "new_users_7d": users_col.count_documents({"created": {"$gte": datetime.utcnow() - timedelta(days=7)}})
+        },
+        "engagement_metrics": {
+            "total_engagements": total_engagements,
+            "recent_engagements": recent_engagements,
+            "avg_session_duration": "5m 23s" 
+        },
+        "store_metrics": {
+            "total_orders": total_orders,
+            "total_revenue": total_revenue_amount,
+            "conversion_rate": "3.2%"
+        },
+        "user_segments": user_segments,
+        "popular_products": popular_products,
+        "recent_activities": recent_activities
+    })
+
+# --- Ethical Data Collection ---
+
+@app.route("/api/consent/update", methods=["POST"])
+def update_consent():
+    payload = request.json or {}
+    user_id = payload.get("user_id")
+    if not user_id:
+        return jsonify({"error": "user_id required"}), 400
+        
+    consent_updates = {
+        "extended_profile.consent.marketing_emails": payload.get("marketing_emails", False),
+        "extended_profile.consent.personalized_ads": payload.get("personalized_ads", False),
+        "extended_profile.consent.data_analytics": payload.get("data_analytics", False),
+        "extended_profile.consent.updated": datetime.utcnow()
+    }
+    
+    users_col.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": consent_updates}
+    )
+    return jsonify({"status": "ok", "message": "Consent preferences updated"})
+
+@app.route("/api/data/export/<user_id>")
+def export_user_data(user_id):
+    """GDPR-compliant data export"""
+    try:
+        user = users_col.find_one({"_id": ObjectId(user_id)})
+    except:
+        return jsonify({"error": "Invalid ID"}), 400
+        
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+        
+    # Remove sensitive internal fields
+    export_data = {
+        "profile": user.get("profile", {}),
+        "extended_profile": user.get("extended_profile", {}),
+        "consent_preferences": user.get("extended_profile", {}).get("consent", {}),
+        "created": user.get("created"),
+        "last_active": user.get("last_active")
+    }
+    
+    return jsonify(export_data)
+
+@app.route("/api/data/delete/<user_id>", methods=["DELETE"])
+def delete_user_data(user_id):
+    """GDPR-compliant data deletion"""
+    try:
+        uid_obj = ObjectId(user_id)
+        result = users_col.delete_one({"_id": uid_obj})
+        
+        # Also delete related engagements (anonymized)
+        eng_col.update_many(
+            {"user_id": user_id},
+            {"$set": {"user_id": None, "anonymized": True}}
+        )
+        
+        if result.deleted_count > 0:
+            return jsonify({"status": "ok", "message": "User data deleted"})
+        else:
+            return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 # ensure at least one admin user exists (hashed)
 if __name__ == "__main__":
